@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace Akgul_Ilhan_cal
+{
+    /// <summary>
+    /// Logique d'interaction pour App.xaml
+    /// </summary>
+    public partial class App : Application
+    {
+    }
+}

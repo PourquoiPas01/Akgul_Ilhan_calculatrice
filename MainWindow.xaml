@@ -1,0 +1,216 @@
+<Window x:Class="Akgul_Ilhan_cal.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Akgul_Ilhan_cal"
+        xmlns:fx="clr-namespace:XamlTemplates.FX.Wpf;assembly=XamlTemplates.FX.Wpf"
+        mc:Ignorable="d"
+        Title="Calculatrice" Height="510" Width="420"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        fx:Glass.IsEnabled="True"
+        PreviewTextInput="Window_PreviewTextInput"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <!-- Fenêtre sans bordure : la barre de titre (40 px) sert à déplacer la fenêtre -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="0"
+                      GlassFrameThickness="0" CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <!-- ========== PINCEAUX LIQUID GLASS ========== -->
+        <LinearGradientBrush x:Key="GlassEdge" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#C8FFFFFF" Offset="0"/>
+            <GradientStop Color="#14FFFFFF" Offset="0.5"/>
+            <GradientStop Color="#70FFFFFF" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="GlassShine" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#38FFFFFF" Offset="0"/>
+            <GradientStop Color="#00FFFFFF" Offset="0.5"/>
+        </LinearGradientBrush>
+
+        <!-- Verre clair (chiffres) -->
+        <LinearGradientBrush x:Key="GlassFill" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#34FFFFFF" Offset="0"/>
+            <GradientStop Color="#12FFFFFF" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Verre sombre (S, scientifique) -->
+        <LinearGradientBrush x:Key="GlassFillDark" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#26FFFFFF" Offset="0"/>
+            <GradientStop Color="#50000000" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Verre orange (opérateurs, AC, =) -->
+        <LinearGradientBrush x:Key="GlassFillAccent" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#B0FFB340" Offset="0"/>
+            <GradientStop Color="#70FF8A00" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- ========== STYLE DE BASE DES BOUTONS (chiffres) ========== -->
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Background" Value="{StaticResource GlassFill}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="38"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="root" RenderTransformOrigin="0.5,0.5">
+                            <Border CornerRadius="100" Background="{TemplateBinding Background}"
+                                    BorderBrush="{StaticResource GlassEdge}" BorderThickness="1.2"/>
+                            <Border CornerRadius="100" Margin="1.5" IsHitTestVisible="False"
+                                    Background="{StaticResource GlassShine}"/>
+                            <Border x:Name="hover" CornerRadius="100" Background="White"
+                                    Opacity="0" IsHitTestVisible="False"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="hover" Property="Opacity" Value="0.14"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="hover" Property="Opacity" Value="0.28"/>
+                                <Setter TargetName="root" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Boutons scientifiques et bouton S -->
+        <Style x:Key="Scientifique" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Background" Value="{StaticResource GlassFillDark}"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+
+        <!-- Opérateurs, AC et = -->
+        <Style x:Key="MyStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource GlassFillAccent}"/>
+        </Style>
+
+        <!-- Petits boutons réduire / fermer -->
+        <Style x:Key="TitleBtn" TargetType="{x:Type Button}" BasedOn="{StaticResource Scientifique}">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+        </Style>
+
+        <!-- Affichage -->
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- Fond : voile blanc léger posé sur l'effet Liquid Glass de la fenêtre -->
+    <Border CornerRadius="28" BorderThickness="1.5"
+            BorderBrush="{StaticResource GlassEdge}" Background="#14FFFFFF">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <!-- Colonne du panneau scientifique : largeur 0 au départ, agrandie par le code -->
+                <ColumnDefinition x:Name="COL_Scientifique" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+
+            <!-- ===== Barre de titre ===== -->
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="5" Orientation="Horizontal"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0">
+                <Button Content="—" Style="{StaticResource TitleBtn}" Click="BTN_Reduire_Click"/>
+                <Button Content="✕" Style="{StaticResource TitleBtn}" Margin="0" Click="BTN_Fermer_Click"/>
+            </StackPanel>
+
+            <!-- ===== Affichage ===== -->
+            <TextBox Grid.Row="1" Grid.ColumnSpan="5" Name="TB_Display" Text="0"
+                     FontSize="40" Focusable="False"
+                     IsReadOnly="True"
+                     Padding="0,0,16,0"
+                     HorizontalContentAlignment="Right"
+                     VerticalContentAlignment="Center"/>
+
+            <Button Grid.Row="1" Grid.Column="0" Name="BTN_Scientifique" Content="S" Style="{StaticResource Scientifique}" Click="BTN_Calculette_Scientifique"
+                    Margin="10,10,50,24"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"/>
+
+            <!-- ===== Boutons ===== -->
+            <Button Grid.Row="2" Grid.Column="0" Name="BTN_1" Content="1" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="2" Grid.Column="1" Name="BTN_2" Content="2" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="2" Grid.Column="2" Name="BTN_3" Content="3" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="2" Grid.Column="3" Name="BTN_Plus" Content="+" Style="{StaticResource MyStyle}" Click="BTN_Operateur_Click" />
+
+            <Button Grid.Row="3" Grid.Column="0" Name="BTN_4" Content="4" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="3" Grid.Column="1" Name="BTN_5" Content="5" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="3" Grid.Column="2" Name="BTN_6" Content="6" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="3" Grid.Column="3" Name="BTN_Fois" Content="*" Style="{StaticResource MyStyle}" Click="BTN_Operateur_Click" />
+
+            <Button Grid.Row="4" Grid.Column="0" Name="BTN_7" Content="7" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="4" Grid.Column="1" Name="BTN_8" Content="8" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="4" Grid.Column="2" Name="BTN_9" Content="9" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="4" Grid.Column="3" Name="BTN_Moins" Content="-" Style="{StaticResource MyStyle}" Click="BTN_Operateur_Click" />
+
+            <Button Grid.Row="5" Grid.Column="0" Name="BTN_0" Content="0" Click="BTN_Chiffre_Click" />
+            <Button Grid.Row="5" Grid.Column="1" Name="BTN_CLR" Content="AC" Style="{StaticResource MyStyle}" Click="BTN_CLR_Click" />
+            <Button Grid.Row="5" Grid.Column="2" Name="BTN_egale" Content="=" Style="{StaticResource MyStyle}" Click="BTN_Egale_Click" />
+            <Button Grid.Row="5" Grid.Column="3" Name="BTN_DIV" Content="/" Style="{StaticResource MyStyle}" Click="BTN_Operateur_Click" />
+
+            <!-- ================== PANNEAU SCIENTIFIQUE ================== -->
+            <Grid x:Name="PANEL_Scientifique" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Row="0" Grid.Column="0" Content="sin" Tag="sin"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="0" Grid.Column="1" Content="cos" Tag="cos"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="tan" Tag="tan"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+
+                <Button Grid.Row="1" Grid.Column="0" Content="√"   Tag="sqrt"  Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="1" Grid.Column="1" Content="x²"  Tag="carre" Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="xʸ"  Tag="^"     Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+
+                <Button Grid.Row="2" Grid.Column="0" Content="log" Tag="log"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="2" Grid.Column="1" Content="ln"  Tag="ln"    Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="2" Grid.Column="2" Content="1/x" Tag="inv"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+
+                <Button Grid.Row="3" Grid.Column="0" Content="π"   Tag="pi"    Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="3" Grid.Column="1" Content="±"   Tag="neg"   Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+                <Button Grid.Row="3" Grid.Column="2" Content=","   Tag="virgule" Style="{StaticResource Scientifique}" Click="BTN_Fonction_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
