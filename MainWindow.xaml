@@ -4,12 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Akgul_Ilhan_cal"
-        xmlns:fx="clr-namespace:XamlTemplates.FX.Wpf;assembly=XamlTemplates.FX.Wpf"
         mc:Ignorable="d"
         Title="Calculatrice" Height="510" Width="420"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
-        fx:Glass.IsEnabled="True"
         PreviewTextInput="Window_PreviewTextInput"
         PreviewKeyDown="Window_PreviewKeyDown">
 
