@@ -118,7 +118,7 @@
 
     <!-- Fond : voile blanc léger posé sur l'effet Liquid Glass de la fenêtre -->
     <Border CornerRadius="28" BorderThickness="1.5"
-            BorderBrush="{StaticResource GlassEdge}" Background="#14FFFFFF">
+            BorderBrush="{StaticResource GlassEdge}" Background="#A0000000">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
